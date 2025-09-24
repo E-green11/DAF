@@ -186,7 +186,7 @@ class DynamicSensitivityAnalyzer:
             loss.backward()
             for name, param in peft_params:
                 param.requires_grad = original_requires_grad_state[name]
-            # 累积梯度平方和
+            # 累积梯度
             for name, param in self.model.named_parameters():
                 if param.grad is not None:
                     # 确保梯度是float32类型
