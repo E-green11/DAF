@@ -1,15 +1,4 @@
-import torch
-import torch.nn as nn
-import numpy as np
-import copy
-import math
-from collections import OrderedDict
-import os
-import time
-from tqdm import tqdm
-from lib.utils import save_on_master
-
-
+"""
 # This script implements the core logic of Dynamic Adaptive Fine-tuning (DAF),
 # a novel paradigm for parameter-efficient fine-tuning.
 #
@@ -21,6 +10,21 @@ from lib.utils import save_on_master
 # 3. create_dynamic_DAF_model: Implements the "REBUILD-AND-REFOCUS" strategy. This
 #    function dynamically reconstructs the model based on the latest sensitivity
 #    analysis, preserving learned knowledge in outdated modules by freezing them.
+"""
+
+
+
+import torch
+import torch.nn as nn
+import numpy as np
+import copy
+import math
+from collections import OrderedDict
+import os
+import time
+from tqdm import tqdm
+from lib.utils import save_on_master
+
 
 
 
