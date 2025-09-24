@@ -1,27 +1,5 @@
-""" Vision Transformer (ViT) in PyTorch
 
-A PyTorch implement of Vision Transformers as described in:
 
-'An Image Is Worth 16 x 16 Words: Transformers for Image Recognition at Scale'
-    - https://arxiv.org/abs/2010.11929
-
-`How to train your ViT? Data, Augmentation, and Regularization in Vision Transformers`
-    - https://arxiv.org/abs/2106.10270
-
-The official jax code is released and available at https://github.com/google-research/vision_transformer
-
-DeiT model defs and weights from https://github.com/facebookresearch/deit,
-paper `DeiT: Data-efficient Image Transformers` - https://arxiv.org/abs/2012.12877
-
-Acknowledgments:
-* The paper authors for releasing code and weights, thanks!
-* I fixed my class token impl based on Phil Wang's https://github.com/lucidrains/vit-pytorch ... check it out
-for some einops/einsum fun
-* Simple transformer style inspired by Andrej Karpathy's https://github.com/karpathy/minGPT
-* Bert reference code checks against Huggingface Transformers and Tensorflow Bert
-
-Hacked together by / Copyright 2020, Ross Wightman
-"""
 import math
 import logging
 from functools import partial
@@ -1067,7 +1045,7 @@ class VisionTransformerSepQKV(nn.Module):
     def forward_features(self, x):
         B = x.shape[0]
         x = self.patch_embed(x)
-        cls_token = self.cls_token.expand(x.shape[0], -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
+        cls_token = self.cls_token.expand(x.shape[0], -1, -1)  
         if self.dist_token is None:
             x = torch.cat((cls_token, x), dim=1)
         else:
@@ -1085,9 +1063,9 @@ class VisionTransformerSepQKV(nn.Module):
     def forward(self, x):
         x = self.forward_features(x)
         if self.head_dist is not None:
-            x, x_dist = self.head(x[0]), self.head_dist(x[1])  # x must be a tuple
+            x, x_dist = self.head(x[0]), self.head_dist(x[1]) 
             if self.training and not torch.jit.is_scripting():
-                # during inference, return the average of both classifier predictions
+          
                 return x, x_dist
             else:
                 return (x + x_dist) / 2
@@ -1145,11 +1123,11 @@ class SparseGradLinearFunction(torch.autograd.Function):
         # skip them. Returning gradients for inputs that don't require it is
         # not an error.
         if ctx.needs_input_grad[0]:
-            # 确保数据类型一致
+  
             grad_output_float = grad_output.to(weight.dtype)
             weight_float = weight.to(grad_output.dtype)
 
-            # 根据输入和输出的数据类型选择正确的操作
+
             if grad_output.dtype == weight.dtype:
                 grad_input = grad_output @ weight
             else:
@@ -1161,11 +1139,11 @@ class SparseGradLinearFunction(torch.autograd.Function):
         if bias is not None and ctx.needs_input_grad[2]:
             grad_bias = grad_output.sum(0)
         if sparse_weight_indexes is not None and sparse_weight_indexes.shape[1] != 0:
-            # 确保数据类型一致
+
             grad_output_flat = grad_output.flatten(0, 1)
             input_flat = input.flatten(0, 1)
             
-            # 确保数据类型匹配
+      
             if grad_output_flat.dtype != input_flat.dtype:
                 grad_output_flat = grad_output_flat.to(input_flat.dtype)
 
@@ -1208,7 +1186,7 @@ def replace_linear(module, name, modules_to_replace, unstructured_indexes, unstr
 
     Set module = net to start the code.
     '''
-    # 如果unstructured_indexes为None，直接返回
+
     if unstructured_indexes is None:
         return
         
@@ -1261,9 +1239,9 @@ class VisionTransformerDAF(nn.Module):
                  unstructured_indexes=None,
                  unstructured_shapes=None,
                  fully_fine_tuned_keys=None,
-                 frozen_matrices=None,  # 添加frozen_matrices参数
-                 special_active_params=None,  # 添加特殊活跃参数列表
-                 special_frozen_params=None,  # 添加特殊冻结参数列表
+                 frozen_matrices=None, 
+                 special_active_params=None, 
+                 special_frozen_params=None, 
                  **kwargs):
         """
         Args:
@@ -1342,9 +1320,9 @@ class VisionTransformerDAF(nn.Module):
 
         self.ft_cls_token = True
         self.fully_fine_tuned_keys = fully_fine_tuned_keys
-        self.frozen_matrices = frozen_matrices  # 保存冻结矩阵标记
-        self.special_active_params = special_active_params or []  # 保存特殊活跃参数列表
-        self.special_frozen_params = special_frozen_params or []  # 保存特殊冻结参数列表
+        self.frozen_matrices = frozen_matrices  
+        self.special_active_params = special_active_params or [] 
+        self.special_frozen_params = special_frozen_params or []  
         if freeze_backbone:
             self.freeze_stages()
 
@@ -1362,42 +1340,41 @@ class VisionTransformerDAF(nn.Module):
         if self.ft_cls_token:
             self.cls_token.requires_grad = True
 
-        # 处理被标记为冻结的结构化参数
+       
         if hasattr(self, 'frozen_matrices') and self.frozen_matrices is not None:
-            # 获取操作名称映射
+           
             op_names = {0: 'q', 1: 'k', 2: 'v', 3: 'proj', 4: 'fc1', 5: 'fc2'}
             
-            # 遍历所有块
+         
             for i, block in enumerate(self.blocks):
                 if i >= len(self.frozen_matrices):
                     continue
                     
-                # 遍历块中的所有操作
+              
                 for j, (op_idx, op_name) in enumerate(op_names.items()):
                     if j >= len(self.frozen_matrices[i]):
                         continue
                         
-                    # 如果该操作被标记为冻结
+              
                     if self.frozen_matrices[i][j]:
-                        # 冻结对应的结构化参数
+                 
                         for name, param in block.named_parameters():
                             if op_name in name and 'structured' in name:
                                 param.requires_grad = False
-                                print(f"冻结低敏感度结构化参数: {name}")
+                                
 
-        # 处理特殊一维sparse_weight参数
+     
         if hasattr(self, 'special_frozen_params') and self.special_frozen_params:
             for name, param in self.named_parameters():
                 if name in self.special_frozen_params:
                     param.requires_grad = False
-                    print(f"冻结低敏感度特殊一维参数: {name}")
-        
-        # 确保特殊活跃参数被激活
+                   
+   
         if hasattr(self, 'special_active_params') and self.special_active_params:
             for name, param in self.named_parameters():
                 if name in self.special_active_params:
                     param.requires_grad = True
-                    print(f"激活高敏感度特殊一维参数: {name}")
+                  
 
         total_para_nums = 0
         head_para_nums = 0
