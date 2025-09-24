@@ -33,11 +33,6 @@ do
         do
             exp_name=vtab_dynamic_spt_lora_a${alpha}_b${beta}_i${dynamic_update_interval}_p${param_budget}
             export MASTER_PORT=$((12000 + $RANDOM % 20000))
-            python train_spt.py --data-path=./data/vtab-1k/${DATASET} --data-set=${DATASET} --model_name=vit_base_patch16_224_in21k_sep_qkv --resume=checkpoints/ViT-B_16.npz --output_dir=./saves/${DATASET}_dynamic_init_sensitivity --batch-size=32 --lr=${LR} --epochs=1 --weight-decay=${WEIGHT_DECAY} --no_aug --mixup=0 --cutmix=0 --direct_resize --smoothing=0 --launcher="none" --seed 0 --val_interval=10 --low_rank_dim=${low_rank_dim} --get_sensitivity --exp_name=${sensitivity_exp_name} --structured_type=lora --alpha=${alpha} --beta=${beta} --structured_vector
-            mkdir -p sensitivity_${sensitivity_exp_name}/${DATASET}
-
-            if [ -d "dynamic_sensitivity_${sensitivity_exp_name}/${DATASET}/epoch_0" ]; then
-                cp -r dynamic_sensitivity_${sensitivity_exp_name}/${DATASET}/epoch_0/* sensitivity_${sensitivity_exp_name}/${DATASET}/
             python train_dynamic_spt.py --data-path=./data/vtab-1k/${DATASET} --data-set=${DATASET} --model_name=vit_base_patch16_224_in21k_spt --resume=checkpoints/ViT-B_16.npz --output_dir=./saves/${DATASET}_dynamic_spt_lr-${LR}_wd-${WEIGHT_DECAY} --batch-size=64 --lr=${LR} --epochs=200 --weight-decay=${WEIGHT_DECAY} --no_aug --mixup=0 --cutmix=0 --direct_resize --smoothing=0 --launcher="none" --seed=${SEED} --val_interval=5  --opt=adamw --low_rank_dim=${low_rank_dim} --initial_sensitivity_path=sensitivity_${sensitivity_exp_name}/${DATASET}/param_req_${param_budget}.pth --exp_name=${currenttime}-${exp_name} --seed=0 --test --block=BlockSPTParallel  --structured_type=lora --structured_vector --freeze_stage --dynamic_update_interval=${dynamic_update_interval} --param_budget=${param_budget} --alpha=${alpha} --beta=${beta} | tee -a logs/${currenttime}-${exp_name}.log
         done
     done
