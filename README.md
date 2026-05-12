@@ -6,8 +6,6 @@ a novel dynamic reconfiguration paradigm for Parameter-Efficient Fine-Tuning (PE
 > Code will be released soon.
 
 
-## Main structure
-![DAF Main Structure](DAF_framework.png)
 
 
 
