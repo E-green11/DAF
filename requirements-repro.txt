@@ -1,0 +1,11 @@
+# Direct Python dependencies validated together with Python 3.10.20.
+# Install the CUDA 12.8 PyTorch wheels first, as shown in README.md, then
+# install this file. The two-stage install keeps the PyTorch-only package
+# index from being used for unrelated packages.
+timm==1.0.28
+PyYAML==6.0.3
+tqdm==4.69.0
+pytest==9.1.1
+datasets==5.0.0
+huggingface-hub==1.24.0
+numpy==1.26.4

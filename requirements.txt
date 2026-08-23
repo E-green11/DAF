@@ -1,0 +1,9 @@
+torch
+torchvision
+timm
+pyyaml
+tqdm
+pytest
+datasets>=5,<6
+huggingface_hub>=1
+numpy>=1.26,<2

@@ -1,0 +1,9 @@
+# Optional legacy SPT exporter environment for Python 3.10.
+# Keep this separate from the main DAF training environment.
+tensorflow-cpu==2.15.1
+keras==2.15.0
+tensorflow-addons==0.23.0
+tensorflow-datasets==4.9.4
+tensorflow-metadata==1.15.0
+protobuf==3.20.3
+Pillow==10.2.0
