@@ -98,28 +98,24 @@ data/
     └── ...
 ```
 
-## CLEVR source and split identity
+## CLEVR split-file contract
 
-The original `clevr_count` and `clevr_dist` runs used the CLEVR lists exported
-through the SPT VTAB/TFDS pipeline, not the ordinary Hugging Face CLEVR export.
-Those sources produce different example/label lists even when their directory
-and split filenames look alike. Put the SPT/TFDS CLEVR export under
+Put the required `clevr_count` and `clevr_dist` task directories under
 `$CLEVR_DATA_ROOT/vtab-1k`; by default `CLEVR_DATA_ROOT` equals `DATA_ROOT`.
-Do not replace those two directories with the ordinary Hugging Face export.
+Their list files must match the manifest checked by the launcher.
 
 [`../configs/clevr_spt_split_sha256.txt`](../configs/clevr_spt_split_sha256.txt)
 records the SHA-256 values of exactly the six required CLEVR text split lists.
-The launcher's preflight checks those six files to catch a substituted ordinary
-export. The manifest covers split-list files only; image files are outside this
-verification boundary.
+The launcher's preflight checks those files before training. The manifest covers
+split-list files only; image files are outside this verification boundary.
 
 ## Preparation helpers
 
-Together the helpers cover the workflow's 18 VTAB tasks: the Hugging Face
-helper defaults to the 16 non-CLEVR tasks, while the SPT helper defaults to the
-two CLEVR tasks in the same common root. Neither prepares CIFAR-100; install that
-dataset separately under the common root. Set `TASKS="task_a task_b"` only to
-override a helper's default subset.
+Together the helpers cover the workflow's 18 VTAB task directories: the
+Hugging Face helper defaults to 16 tasks and the optional CLEVR helper prepares
+the remaining two in the same common root. Neither prepares CIFAR-100; install
+that dataset separately under the common root. Set `TASKS="task_a task_b"` only
+to override a helper's default subset.
 
 The Hugging Face helper writes its 16 non-CLEVR tasks to `$DATA_ROOT/vtab-1k`
 by default. It intentionally does not export CLEVR for this workflow:
@@ -133,8 +129,7 @@ It also accepts `OUTPUT_ROOT`, `DOWNLOAD_DIR`, `TASKS`, and `ZIP_PATH`.
 Availability and licensing vary by source, so inspect the produced task trees
 against the table above.
 
-If an existing SPT checkout contains `data/vtab-source/get_vtab1k.py`, export
-the two CLEVR tasks into the common root with:
+To prepare the two CLEVR task directories from a compatible checkout, use:
 
 ```bash
 SPT_ROOT=/path/to/SPT \
@@ -146,9 +141,8 @@ DATA_ROOT=/path/to/data \
 bash scripts/prepare_vtab1k_spt.sh
 ```
 
-Use the same SPT/TFDS source revision as the original split contract, then run
-the main `--check`; a different revision or export is rejected if its lists do
-not match the manifest. `TARGET_ROOT` can select another common root; set
+Run the main `--check` after preparation. It stops when the required list files
+do not match the manifest. `TARGET_ROOT` can select another common root; set
 `CLEVR_DATA_ROOT` to that same root when launching. Neither preparation script
 downloads the ViT checkpoint.
 

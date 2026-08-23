@@ -27,26 +27,26 @@ layout, provided every path in the lists points to the actual file.
 
 ## Preparation and validation
 
-The preparation helpers use source-specific defaults: Hugging Face prepares
-the 16 non-CLEVR tasks, while SPT prepares the two manifest-checked CLEVR tasks
-under the same common root:
+The preparation helpers cover all 18 VTAB task directories: the Hugging Face
+helper prepares 16 tasks, while the optional CLEVR helper prepares the two
+manifest-checked CLEVR task directories under the same common root:
 
 ```bash
 bash scripts/prepare_vtab1k_hf.sh --check
 bash scripts/prepare_vtab1k_hf.sh
 ```
 
-For an existing compatible SPT checkout:
+For an existing compatible CLEVR preparation checkout:
 
 ```bash
 SPT_ROOT=/path/to/SPT bash scripts/prepare_vtab1k_spt.sh --check
 SPT_ROOT=/path/to/SPT bash scripts/prepare_vtab1k_spt.sh
 ```
 
-The SPT exporter is an optional legacy path with a separate Python 3.10
-compatibility environment. Install `requirements-spt.txt` there; do not add its
-TensorFlow and TensorFlow Addons dependencies to the main DAF training
-environment. The Hugging Face exporter uses the main environment.
+The optional CLEVR preparation helper uses a separate Python 3.10 compatibility
+environment. Install `requirements-spt.txt` there; do not add its TensorFlow and
+TensorFlow Addons dependencies to the main DAF training environment. The
+Hugging Face helper uses the main environment.
 
 Both exporters publish one task at a time only after all four lists and every
 referenced image have been validated. A published task has an

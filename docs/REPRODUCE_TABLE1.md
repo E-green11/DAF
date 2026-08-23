@@ -30,8 +30,8 @@ bash /path/to/DAFgit/scripts/reproduce_table1_vit_b16_npz_test_best.sh --check
 `--check` does not train. It verifies the `PYTHON` executable, `GPU_LIST`
 syntax, `CHECKPOINT`, `$DATA_ROOT/cifar-100-python`, and the task lists below
 `$DATA_ROOT/vtab-1k`. An optional `CLEVR_DATA_ROOT` override can hold the two
-CLEVR task directories elsewhere. Preflight also compares their six text split lists
-with [`../configs/clevr_spt_split_sha256.txt`](../configs/clevr_spt_split_sha256.txt).
+CLEVR task directories elsewhere. Preflight also compares their six text split
+lists with [`../configs/clevr_spt_split_sha256.txt`](../configs/clevr_spt_split_sha256.txt).
 A mismatch stops before output directories or training processes are created.
 
 ## Full launch
@@ -57,7 +57,7 @@ list a GPU that is unavailable or already too full for one training process.
 | --- | --- | --- |
 | `PYTHON` | `python` | Python executable or executable path |
 | `DATA_ROOT` | `<repo>/data` | Common root containing `cifar-100-python` and all `vtab-1k` tasks |
-| `CLEVR_DATA_ROOT` | `$DATA_ROOT` | Optional alternate common root for the two SPT VTAB/TFDS CLEVR task directories |
+| `CLEVR_DATA_ROOT` | `$DATA_ROOT` | Optional alternate common root for the two manifest-verified CLEVR task directories |
 | `CHECKPOINT` | `<repo>/checkpoints/ViT-B_16.npz` | Compatible ViT-B/16 NPZ file |
 | `OUTPUT_ROOT` | `<repo>/outputs/reproduce_table1_vit_b16_npz_test_best` | Parent directory for per-task artifacts |
 | `LOG_ROOT` | `<repo>/logs/reproduce_table1_vit_b16_npz_test_best` | Parent directory for per-task text logs |
@@ -89,10 +89,9 @@ bash /path/to/DAFgit/scripts/reproduce_table1_vit_b16_npz_test_best.sh --check
 
 Remove `--check` only after preflight succeeds.
 
-The original CLEVR runs used the SPT VTAB/TFDS split semantics. An ordinary
-Hugging Face CLEVR export has different lists and cannot replace this root.
-The manifest verifies the three text lists for each of the two tasks; it does
-not verify the referenced image files.
+The two CLEVR task directories must contain list files that match the manifest.
+The manifest verifies the three text lists for each task; it does not verify the
+referenced image files.
 
 ## Outputs and logs
 
