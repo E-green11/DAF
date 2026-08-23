@@ -53,10 +53,12 @@ The validated direct versions are Python 3.10.20, torch 2.11.0+cu128,
 torchvision 0.26.0+cu128, timm 1.0.28, PyYAML 6.0.3, tqdm 4.69.0, pytest 9.1.1,
 datasets 5.0.0, huggingface-hub 1.24.0, and numpy 1.26.4.
 
-The SPT exporter itself is optional when the required CLEVR files have already
-been prepared, and it is not part of the validated DAF training stack. The
-workflow nevertheless requires the SPT/TFDS CLEVR split variant documented
-below. If you need to create those files, use a separate Python 3.10 environment
+Optional data-preparation utilities are only needed when the required dataset
+files have not already been prepared. The main DAF training commands use the
+`daf` environment. See `docs/DATA_AND_WEIGHTS.md` for optional preparation
+steps and the required file layout.
+
+For optional data-preparation work, use a separate Python 3.10 environment
 instead of adding TensorFlow and TensorFlow Addons to the training environment:
 
 ```bash
@@ -137,10 +139,11 @@ override examples, and run-state handling are documented in
 
 By default, per-task run directories are written below
 `outputs/reproduce_table1_vit_b16_npz_test_best/` and text logs below
-`logs/reproduce_table1_vit_b16_npz_test_best/`. A successfully finished task
-contains a `.complete` marker. An interrupted or failed task deliberately has
-no marker, and the launcher refuses to overwrite its partial directory or log.
-Use new output/log roots or archive the exact partial artifacts before retrying.
+`logs/reproduce_table1_vit_b16_npz_test_best/`. These are run artifacts. A
+successfully finished task contains a `.complete` marker. An interrupted or
+failed task deliberately has no marker, and the launcher refuses to overwrite
+its partial directory or log. Use new output/log roots or archive the exact
+partial artifacts before retrying.
 The `.daf-launch.lock` directories prevent two launchers from owning the same
 roots; never remove one while its launcher is active.
 
