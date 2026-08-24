@@ -94,6 +94,17 @@ split-file layout. The launchers accept absolute external paths too, through
 the two manifest-checked CLEVR task directories live under a different common
 root.
 
+## VTAB-1k dataset
+
+Prepare the VTAB-1k data with:
+
+```bash
+bash scripts/prepare_vtab1k_hf.sh
+```
+
+The script automatically downloads and prepares the supported VTAB-1k tasks
+from Hugging Face.
+
 ## Check first, then run
 
 The relative script commands below must also be run from the repository root.
